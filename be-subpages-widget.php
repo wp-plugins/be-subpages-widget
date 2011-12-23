@@ -111,7 +111,7 @@ class BE_Subpages_Widget extends WP_Widget {
 	function form( $instance ) {
 
 		/* Set up some default widget settings. */
-		$defaults = array( 'title' => '', 'title_from_parent' => 0, 'title_linked' => 0 );
+		$defaults = array( 'title' => '', 'title_from_parent' => 0, 'title_link' => 0 );
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 		 
 		<p>
