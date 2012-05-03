@@ -41,8 +41,8 @@ class BE_Subpages_Widget extends WP_Widget {
     /**
      * Outputs the HTML for this widget.
      *
-     * @param array  An array of standard parameters for widgets in this theme 
-     * @param array  An array of settings for this widget instance 
+     * @param array, An array of standard parameters for widgets in this theme 
+     * @param array, An array of settings for this widget instance 
      * @return void Echoes it's output
      **/
 	function widget( $args, $instance ) {
@@ -52,42 +52,83 @@ class BE_Subpages_Widget extends WP_Widget {
 		if ( !is_page() )
 			return;
 			
-		// Find top level parent
+		// Find top level parent and create path to it
 		global $post;
-		$parent = $post;
-		while( $parent->post_parent ) $parent = get_post( $parent->post_parent );
-			
+		$parents = array_reverse( get_ancestors( $post->ID, 'page' ) );
+		$parents[] = $post->ID;
+
 		// Build a menu listing top level parent's children
 		$args = array(
-			'child_of' => $parent->ID,
-			'title_li' => '',
-			'depth' => '1',
-			'echo' => false,
+			'child_of' => $parents[0],
+			'parent' => $parents[0],
 		);
-		$subpages = wp_list_pages( apply_filters( 'be_subpages_widget_args', $args ) );
+		$subpages = get_pages( apply_filters( 'be_subpages_widget_args', $args ) );
 		
 		// If there are pages, display the widget
-		if ( !empty( $subpages ) ) {
-			echo $before_widget;
+		if ( empty( $subpages ) ) 
+			return;
 			
-			// Build title
-			$title = $instance['title'];
-			if( 1 == $instance['title_from_parent'] ) {
-				$title = $parent->post_title;
-				if( 1 == $instance['title_link'] )
-					$title = '<a href="' . get_permalink( $parent->ID ) . '">' . $title . '</a>';
-			}	
+		echo $before_widget;
+		
+		// Build title
+		$title = esc_attr( $instance['title'] );
+		if( 1 == $instance['title_from_parent'] ) {
+			$title = get_the_title( $parents[0] );
+			if( 1 == $instance['title_link'] )
+				$title = '<a href="' . get_permalink( $parents[0] ) . '">' . $title . '</a>';
+		}	
 
-			if( !empty( $title ) ) 
-				echo $before_title . $title . $after_title;
+		if( !empty( $title ) ) 
+			echo $before_title . $title . $after_title;
+		
+		if( !isset( $instance['deep_subpages'] ) )
+			$instance['deep_subpages'] = 0;
 			
-			// Build the page listing	
-			echo '<ul>' . $subpages . '</ul>';
-			
-			echo $after_widget;			
-		}
+		// Print the tree
+		$this->build_subpages( $subpages, $parents, $instance['deep_subpages'] );
+		
+		echo $after_widget;			
 	}
 	
+	/**
+	 * Build the Subpages
+	 *
+	 * @param array $subpages, array of post objects
+	 * @param array $parents, array of parent IDs
+	 * @param bool $deep_subpages, whether to include current page's subpages
+	 * @return string $output
+	 */
+	function build_subpages( $subpages, $parents, $deep_subpages = 0 ) {
+		global $post;
+		// Build the page listing	
+		echo '<ul>';
+		foreach ( $subpages as $subpage ) {
+			$class = "";
+			// Set special class for current page
+			if ( $subpage->ID == $post->ID ) {
+				$class = ' class="widget_subpages_current_page"';
+			}
+			echo '<li' . $class . '><a href="' . get_page_link( $subpage->ID ) . '">' . apply_filters( 'be_subpages_page_title', $subpage->post_title ) . '</a></li>';
+			// Check if the subpage is in parent tree to go deeper
+			if ( $deep_subpages && in_array( $subpage->ID, $parents ) ) {
+				$args = array(
+					'child_of' => $subpage->ID,
+					'parent' => $subpage->ID,
+				);
+				$deeper_pages = get_pages( apply_filters( 'be_subpages_widget_args', $args ) );
+				$this->build_subpages( $deeper_pages, $parents );
+			}
+		}
+		echo '</ul>';
+	}
+
+	/**
+	 * Sanitizes form inputs on save
+	 * 
+	 * @param array $new_instance
+	 * @param array $old_instance
+	 * @return array $new_instance
+	 */
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 
@@ -100,10 +141,16 @@ class BE_Subpages_Widget extends WP_Widget {
 		return $instance;
 	}
 
+	/**
+	 * Build the widget's form
+	 *
+	 * @param array $instance, An array of settings for this widget instance 
+	 * @return null
+	 */
 	function form( $instance ) {
 
 		/* Set up some default widget settings. */
-		$defaults = array( 'title' => '', 'title_from_parent' => 0, 'title_link' => 0 );
+		$defaults = array( 'title' => '', 'title_from_parent' => 0, 'title_link' => 0, 'deep_subpages' => 0 );
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 		 
 		<p>
@@ -120,13 +167,15 @@ class BE_Subpages_Widget extends WP_Widget {
 			<input class="checkbox" type="checkbox" value="1" <?php checked( $instance['title_link'], 1 ); ?> id="<?php echo $this->get_field_id( 'title_link' ); ?>" name="<?php echo $this->get_field_name( 'title_link' ); ?>" />
 			<label for="<?php echo $this->get_field_id( 'title_link' ); ?>"><?php _e( 'Make title a link', 'be-subpages' ); echo '<br /><em>('; _e( 'only if "use top level page" is checked', 'be-subpages' ); echo ')</em></label>';?>
 		</p>
+
 		<p>
 			<input class="checkbox" type="checkbox" value="1" <?php checked( $instance['deep_subpages'], 1 ); ?> id="<?php echo $this->get_field_id( 'deep_subpages' ); ?>" name="<?php echo $this->get_field_name( 'deep_subpages' ); ?>" />
 			<label for="<?php echo $this->get_field_id( 'deep_subpages' ); ?>"><?php _e( 'Include the current page\'s subpages', 'be-subpages' ); ?></label>
 		</p>
-		
+
 		<?php
 	}	
+	
 
 }
 
