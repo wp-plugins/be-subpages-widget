@@ -3,7 +3,7 @@ Contributors: billerickson
 Tags: widget, subpages, menu
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: trunk
+Stable tag: 1.0
 
 Lists subpages of the current section
 
