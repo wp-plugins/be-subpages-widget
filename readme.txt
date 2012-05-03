@@ -21,7 +21,7 @@ You can customize the listing by using the 'be_subpages_widget_args' filter, whi
 
 = 1.1 =
 * Allow deeper menu (current page's subpages)
-* Translations
+* French Translation
 
 = 1.0 =
 * Release of plugin

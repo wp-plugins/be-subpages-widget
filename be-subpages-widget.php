@@ -9,16 +9,6 @@ Author URI: http://www.billerickson.net
 License: GPLv2
 */
 
-/**
- * Translations
- *
- */
-function be_subpages_translations() {
-	load_plugin_textdomain( 'be-subpages', false, basename( dirname( __FILE__ ) ) . '/languages' );
-}
-add_action( 'init', 'be_subpages_translations' );
-
-
 /** 
  * Register Widget
  *
@@ -43,6 +33,7 @@ class BE_Subpages_Widget extends WP_Widget {
      * @return void
      **/
 	function BE_Subpages_Widget() {
+		load_plugin_textdomain( 'be-subpages', false, basename( dirname( __FILE__ ) ) . '/languages' );
 		$widget_ops = array( 'classname' => 'widget_subpages', 'description' => __( 'Lists current section subpages', 'be-subpages' ) );
 		$this->WP_Widget( 'subpages-widget', __( 'Subpages Widget', 'be-subpages' ), $widget_ops );
 	}
@@ -101,9 +92,10 @@ class BE_Subpages_Widget extends WP_Widget {
 		$instance = $old_instance;
 
 		/* Strip tags (if needed) and update the widget settings. */
-		$instance['title'] = strip_tags( $new_instance['title'] );
-		$instance['title_from_parent'] = $new_instance['title_from_parent'];
-		$instance['title_link'] = $new_instance['title_link'];
+		$instance['title'] = esc_attr( $new_instance['title'] );
+		$instance['title_from_parent'] = (int) $new_instance['title_from_parent'];
+		$instance['title_link'] = (int) $new_instance['title_link'];
+		$instance['deep_subpages'] = (int) $new_instance['deep_subpages'];
 		
 		return $instance;
 	}
@@ -127,7 +119,13 @@ class BE_Subpages_Widget extends WP_Widget {
 		<p>
 			<input class="checkbox" type="checkbox" value="1" <?php checked( $instance['title_link'], 1 ); ?> id="<?php echo $this->get_field_id( 'title_link' ); ?>" name="<?php echo $this->get_field_name( 'title_link' ); ?>" />
 			<label for="<?php echo $this->get_field_id( 'title_link' ); ?>"><?php _e( 'Make title a link', 'be-subpages' ); echo '<br /><em>('; _e( 'only if "use top level page" is checked', 'be-subpages' ); echo ')</em></label>';?>
-		</p>			<?php
+		</p>
+		<p>
+			<input class="checkbox" type="checkbox" value="1" <?php checked( $instance['deep_subpages'], 1 ); ?> id="<?php echo $this->get_field_id( 'deep_subpages' ); ?>" name="<?php echo $this->get_field_name( 'deep_subpages' ); ?>" />
+			<label for="<?php echo $this->get_field_id( 'deep_subpages' ); ?>"><?php _e( 'Include the current page\'s subpages', 'be-subpages' ); ?></label>
+		</p>
+		
+		<?php
 	}	
 
 }
