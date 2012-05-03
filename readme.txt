@@ -15,13 +15,18 @@ This widget will dynamically list a section's subpages. When on a page, it will 
 
 It can also include the current page's subpages in listing.
 
-You can customize the listing by using the 'be_subpages_widget_args' filter, which modifies the arguments passed to wp_list_pages.
+You can customize the listing with the following filters: 
+be_subpages_widget_args - modifies the arguments passed to wp_list_pages
+be_subpages_page_title - customize the page title
 
 == Changelog ==
 
 = 1.1 =
 * Allow deeper menu (current page's subpages)
 * French Translation
+* Add 'widget_subpages_current_page' class to current menu item
+* Add be_subpages_page_title filter
+* Thanks to Cédric Houbart for this set of changes
 
 = 1.0 =
 * Release of plugin
