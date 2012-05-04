@@ -19,6 +19,10 @@ You can customize the listing with the following filters:
 be_subpages_widget_args - modifies the arguments passed to wp_list_pages
 be_subpages_page_title - customize the page title
 
+Contributors:
+- [billerickson](http://profiles.wordpress.org/billerickson)
+- [scil](http://profiles.wordpress.org/scil/)
+
 == Changelog ==
 
 = 1.1 =
@@ -26,7 +30,7 @@ be_subpages_page_title - customize the page title
 * French Translation
 * Add 'widget_subpages_current_page' class to current menu item
 * Add be_subpages_page_title filter
-* Thanks to Cedric Houbart for this set of changes
+* Thanks to Cedric Houbart of SCIL for this set of changes
 
 = 1.0 =
 * Release of plugin
