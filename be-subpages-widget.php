@@ -3,7 +3,7 @@
 Plugin Name: BE Subpages Widget
 Plugin URI: http://www.billerickson.net
 Description: Lists subpages of the current section
-Version: 1.1
+Version: 1.2
 Author: Bill Erickson
 Author URI: http://www.billerickson.net
 License: GPLv2
@@ -61,8 +61,10 @@ class BE_Subpages_Widget extends WP_Widget {
 		$args = array(
 			'child_of' => $parents[0],
 			'parent' => $parents[0],
+			'sort_column' => 'menu_order'
 		);
-		$subpages = get_pages( apply_filters( 'be_subpages_widget_args', $args ) );
+		$depth = 1;
+		$subpages = get_pages( apply_filters( 'be_subpages_widget_args', $args, $depth ) );
 		
 		// If there are pages, display the widget
 		if ( empty( $subpages ) ) 
@@ -70,12 +72,15 @@ class BE_Subpages_Widget extends WP_Widget {
 			
 		echo $before_widget;
 		
+		global $be_subpages_is_first;
+		$be_subpages_is_first = true;
+
 		// Build title
 		$title = esc_attr( $instance['title'] );
 		if( 1 == $instance['title_from_parent'] ) {
 			$title = get_the_title( $parents[0] );
 			if( 1 == $instance['title_link'] )
-				$title = '<a href="' . get_permalink( $parents[0] ) . '">' . $title . '</a>';
+				$title = '<a href="' . get_permalink( $parents[0] ) . '">' . apply_filters( 'be_subpages_widget_title', $title ) . '</a>';
 		}	
 
 		if( !empty( $title ) ) 
@@ -85,7 +90,7 @@ class BE_Subpages_Widget extends WP_Widget {
 			$instance['deep_subpages'] = 0;
 			
 		// Print the tree
-		$this->build_subpages( $subpages, $parents, $instance['deep_subpages'] );
+		$this->build_subpages( $subpages, $parents, $instance['deep_subpages'], $depth );
 		
 		echo $after_widget;			
 	}
@@ -98,25 +103,35 @@ class BE_Subpages_Widget extends WP_Widget {
 	 * @param bool $deep_subpages, whether to include current page's subpages
 	 * @return string $output
 	 */
-	function build_subpages( $subpages, $parents, $deep_subpages = 0 ) {
-		global $post;
+	function build_subpages( $subpages, $parents, $deep_subpages = 0, $depth = 1 ) {
+		global $post, $be_subpages_is_first;
 		// Build the page listing	
 		echo '<ul>';
 		foreach ( $subpages as $subpage ) {
-			$class = "";
+			$class = array();
+			
 			// Set special class for current page
-			if ( $subpage->ID == $post->ID ) {
-				$class = ' class="widget_subpages_current_page"';
-			}
-			echo '<li' . $class . '><a href="' . get_page_link( $subpage->ID ) . '">' . apply_filters( 'be_subpages_page_title', $subpage->post_title ) . '</a></li>';
+			if ( $subpage->ID == $post->ID )
+				$class[] = 'widget_subpages_current_page';
+				
+			// First menu item
+			if( $be_subpages_is_first )
+				$class[] .= 'first-menu-item';
+			$be_subpages_is_first = false;
+			
+			$class = apply_filters( 'be_subpages_widget_class', $class, $subpage );
+
+			echo '<li class="' . implode( ' ', $class ) . '"><a href="' . get_page_link( $subpage->ID ) . '">' . apply_filters( 'be_subpages_page_title', $subpage->post_title ) . '</a></li>';
 			// Check if the subpage is in parent tree to go deeper
 			if ( $deep_subpages && in_array( $subpage->ID, $parents ) ) {
 				$args = array(
 					'child_of' => $subpage->ID,
 					'parent' => $subpage->ID,
+					'sort_column' => 'menu_order'
 				);
-				$deeper_pages = get_pages( apply_filters( 'be_subpages_widget_args', $args ) );
-				$this->build_subpages( $deeper_pages, $parents );
+				$deeper_pages = get_pages( apply_filters( 'be_subpages_widget_args', $args, $depth ) );
+				$depth++;
+				$this->build_subpages( $deeper_pages, $parents, $deep_subpages, $depth );
 			}
 		}
 		echo '</ul>';
@@ -178,5 +193,3 @@ class BE_Subpages_Widget extends WP_Widget {
 	
 
 }
-
-?>

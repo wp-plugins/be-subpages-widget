@@ -2,8 +2,8 @@
 Contributors: billerickson
 Tags: widget, subpages, menu
 Requires at least: 3.0
-Tested up to: 3.3.2
-Stable tag: 1.1
+Tested up to: 3.5
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +23,16 @@ Contributors:
 - [billerickson](http://profiles.wordpress.org/billerickson)
 - [scil](http://profiles.wordpress.org/scil/)
 
+[Support Forum](https://github.com/billerickson/BE-Subpages-Widget/issues)
+
 == Changelog ==
+
+= 1.2 =
+* Add class for first menu item
+* Add filter for widget classes
+* Add filter for widget title
+* Sort by menu order
+* Add a depth parameter to the args filter
 
 = 1.1 =
 * Allow deeper menu (current page's subpages)
