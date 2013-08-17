@@ -2,8 +2,8 @@
 Contributors: billerickson
 Tags: widget, subpages, menu
 Requires at least: 3.0
-Tested up to: 3.5
-Stable tag: 1.2
+Tested up to: 3.6
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,9 @@ Contributors:
 [Support Forum](https://github.com/billerickson/BE-Subpages-Widget/issues)
 
 == Changelog ==
+
+= 1.2.1 = 
+* Only output HTML for classes if there are classes
 
 = 1.2 =
 * Add class for first menu item
