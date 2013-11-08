@@ -48,7 +48,7 @@ class BE_Subpages_Widget extends WP_Widget {
 	function widget( $args, $instance ) {
 		extract( $args, EXTR_SKIP );
 		
-		// Only run on pages, but filterable
+		// Only run on hierarchical post types
 		$post_types = get_post_types( array( 'hierarchical' => true ) );
 		if ( !is_singular( $post_types ) )
 			return;
