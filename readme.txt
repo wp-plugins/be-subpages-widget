@@ -2,8 +2,8 @@
 Contributors: billerickson
 Tags: widget, subpages, menu
 Requires at least: 3.0
-Tested up to: 3.6
-Stable tag: 1.2.1
+Tested up to: 3.9
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,13 +22,23 @@ be_subpages_page_title - customize the page title
 Contributors:
 - [billerickson](http://profiles.wordpress.org/billerickson)
 - [scil](http://profiles.wordpress.org/scil/)
+- [jb510](https://github.com/jb510)
+- [fabiancz](https://github.com/fabiancz)
 
 [Support Forum](https://github.com/billerickson/BE-Subpages-Widget/issues)
 
 == Changelog ==
 
-= 1.2.1 = 
+= 1.4 =
+* Update widget formatting in backend
+* Subpage titles are filterable
+
+= 1.3 = 
+* Support for all hierarchical post types
 * Only output HTML for classes if there are classes
+* Only output subpages ul if there are subpages
+* Allow second level subpages to be nested in li
+* Czech translation
 
 = 1.2 =
 * Add class for first menu item
