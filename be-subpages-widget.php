@@ -3,7 +3,7 @@
 Plugin Name: BE Subpages Widget
 Plugin URI: http://www.billerickson.net
 Description: Lists subpages of the current section
-Version: 1.3
+Version: 1.4
 Author: Bill Erickson
 Author URI: http://www.billerickson.net
 License: GPLv2
@@ -50,7 +50,7 @@ class BE_Subpages_Widget extends WP_Widget {
 		
 		// Only run on hierarchical post types
 		$post_types = get_post_types( array( 'hierarchical' => true ) );
-		if ( !is_singular( $post_types ) )
+		if ( !is_singular( $post_types ) && !apply_filters( 'be_subpages_widget_display_override', false ) )
 			return;
 			
 		// Find top level parent and create path to it
@@ -130,7 +130,7 @@ class BE_Subpages_Widget extends WP_Widget {
 			$class = apply_filters( 'be_subpages_widget_class', $class, $subpage );
 			$class = !empty( $class ) ? ' class="' . implode( ' ', $class ) . '"' : '';
 
-			echo '<li' . $class . '><a href="' . get_page_link( $subpage->ID ) . '">' . apply_filters( 'be_subpages_page_title', $subpage->post_title ) . '</a>';
+			echo '<li' . $class . '><a href="' . get_permalink( $subpage->ID ) . '">' . apply_filters( 'be_subpages_page_title', $subpage->post_title, $subpage ) . '</a>';
 			// If nesting supress the closing li
 			if (!$nest_subpages)
 				echo '</li>';
@@ -187,8 +187,8 @@ class BE_Subpages_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 		 
 		<p>
-		<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'be-subpages' );?></label>
-		<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" />
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'be-subpages' );?></label>
+			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" />
 		</p>
 		
 		<p>
