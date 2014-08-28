@@ -25,7 +25,7 @@ Contributors:
 - [jb510](https://github.com/jb510)
 - [fabiancz](https://github.com/fabiancz)
 
-[Support Forum](https://github.com/billerickson/BE-Subpages-Widget/issues)
+**No support will be provided by the developer**
 
 == Changelog ==
 
