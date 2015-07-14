@@ -3,7 +3,7 @@
 Plugin Name: BE Subpages Widget
 Plugin URI: http://www.billerickson.net
 Description: Lists subpages of the current section
-Version: 1.4
+Version: 1.6
 Author: Bill Erickson
 Author URI: http://www.billerickson.net
 License: GPLv2
@@ -32,10 +32,10 @@ class BE_Subpages_Widget extends WP_Widget {
      *
      * @return void
      **/
-	function BE_Subpages_Widget() {
+	function __construct() {
 		load_plugin_textdomain( 'be-subpages', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 		$widget_ops = array( 'classname' => 'widget_subpages', 'description' => __( 'Lists current section subpages', 'be-subpages' ) );
-		$this->WP_Widget( 'subpages-widget', __( 'Subpages Widget', 'be-subpages' ), $widget_ops );
+		parent::__construct( 'subpages-widget', __( 'Subpages Widget', 'be-subpages' ), $widget_ops );
 	}
 
     /**
@@ -57,6 +57,7 @@ class BE_Subpages_Widget extends WP_Widget {
 		global $post;
 		$parents = array_reverse( get_ancestors( $post->ID, 'page' ) );
 		$parents[] = $post->ID;
+		$parents = apply_filters( 'be_subpages_widget_parents', $parents );
 
 		// Build a menu listing top level parent's children
 		$args = array(
@@ -118,6 +119,9 @@ class BE_Subpages_Widget extends WP_Widget {
 		foreach ( $subpages as $subpage ) {
 			$class = array();
 			
+			// Unique Identifier
+			$class[] = 'menu-item-' . $subpage->ID;
+			
 			// Set special class for current page
 			if ( $subpage->ID == $post->ID )
 				$class[] = 'widget_subpages_current_page';
@@ -134,6 +138,9 @@ class BE_Subpages_Widget extends WP_Widget {
 			// If nesting supress the closing li
 			if (!$nest_subpages)
 				echo '</li>';
+			
+			do_action( 'be_subpages_widget_menu_extra', $subpage, $class );
+			
 			// Check if the subpage is in parent tree to go deeper
 			if ( $deep_subpages && in_array( $subpage->ID, $parents ) ) {
 				$args = array(
